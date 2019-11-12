@@ -5,13 +5,20 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class MainActivity extends AppCompatActivity {
+import com.google.android.material.snackbar.Snackbar;
+
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements GameActionInterface{
 
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private Toolbar toolbar;
+    private MyAdapter myAdapter;
     private CoordinatorLayout coordinatorLayout;
 
     @Override
@@ -28,13 +35,54 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView() {
-        //TODO Bind recyclerview and set its adapter.
+        recyclerView = (RecyclerView) findViewById(R.id.my_recyclerview);
 
-        //Use data generator to get data to display.
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        recyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+        // specify an adapter (see also next example)
+        myAdapter = new MyAdapter(DataGenerator.generateData());
+        recyclerView.setAdapter(myAdapter);
+
     }
 
     public void displaySnackBar(String message) {
-        //TODO write a method that displays a snackbar in the coordinator layout with the "message" parameter as content.
+        Snackbar snackbar = Snackbar
+                .make(coordinatorLayout, message, Snackbar.LENGTH_LONG);
+        snackbar.show();
+
+    }
+   /* public void changeLayout(){
+        layoutManager = new LinearLayoutManager(this);
+        if (recyclerView.getLayoutManager() == layoutManager){
+            GridLayoutManager grid;
+            grid = new GridLayoutManager();
+            recyclerView.setLayoutManager(grid);
+        }
+    }*/
+    @Override
+    public void onGameInfoClicked(String gameTitle) {
+        List<GameViewModel> data = DataGenerator.generateData();
+        for (int i = 0; i<data.size();i++){
+            if (data.get(i).getTitle()== gameTitle){
+                displaySnackBar("ce jeu est "+data.get(i).getDescription());
+            }
+        }
+    }
+
+    @Override
+    public void onGameClicked(String gameTitle) {
+        List<GameViewModel> data = DataGenerator.generateData();
+        for (int i = 0; i<data.size();i++){
+            if (data.get(i).getTitle()== gameTitle){
+                displaySnackBar(data.get(i).getDescription() + " si ma mémoire est bonne");
+            }
+        }
     }
 
     //TODO create callback methods for item click
